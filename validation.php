@@ -30,15 +30,33 @@ class validation extends base
         $providePath=fileSystem::$bathDirPath.'ext'.DIRECTORY_SEPARATOR.$newPath.DIRECTORY_SEPARATOR.'provide';
         if(!is_dir($providePath)){
             if(mkdir($providePath,0777,true)===false){
-                throw new \Exception('创建provide目录失败');
+                throw new \Exception('创建'.$providePath.'目录失败');
             }
         }
+        $supportPath=$providePath.DIRECTORY_SEPARATOR.'support';
+        if(!is_dir($supportPath)){
+            if(mkdir($supportPath,0777,true)===false){
+                throw new \Exception('创建'.$supportPath.'目录失败');
+            }
+        }
+
+
         $contents=static::baseContent();
 
         foreach (constant::$oldUniqueNameSpaceArray as $key => $value) {
             $contents = str_replace($value, constant::$newUniqueNameSpaceArray[$key], $contents);
         }
         $ValidationPath=$providePath.DIRECTORY_SEPARATOR.'Validation.php';
+
+
+        $extendLoadPath=$supportPath.DIRECTORY_SEPARATOR.'ExtendLoad.php';
+        if (file_put_contents($extendLoadPath, static::extendLoad()) === false) {
+            throw new \Exception('写入文件失败:'.$extendLoadPath);
+        }
+
+
+
+
 
         //生成中间验证器服务文件
         if (file_put_contents($ValidationPath, $contents) === false) {
@@ -58,7 +76,20 @@ class validation extends base
         //生成命名空间结构并追加
         $composerJson=file_get_contents(fileSystem::$bathDirPath.'ext'.DIRECTORY_SEPARATOR.'composer.json');
         $data=json_decode($composerJson,true);
-        $data['autoload']['psr-4']=array_merge_recursive($data['autoload']['psr-4'],['LumenV\\'=>$newPath.'/'.'provide']);
+
+
+
+        //增加命名空间
+
+
+        $data['autoload']['psr-4'] = array_merge_recursive($data['autoload']['psr-4'],
+            ['LumenV\\' => $newPath.'/'.'provide'],
+        [constant::$namespacePrefix.'\\Illuminate\\Support\\'=>'src/provide/support']
+        );
+
+
+
+
         $data=json_encode($data,JSON_UNESCAPED_UNICODE+JSON_UNESCAPED_SLASHES+JSON_PRETTY_PRINT );
         file_put_contents(fileSystem::$bathDirPath.'ext'.DIRECTORY_SEPARATOR.'composer.json', $data);
 
@@ -74,14 +105,15 @@ use Illuminate\Filesystem\Filesystem;
 use Illuminate\Translation\FileLoader;
 use Illuminate\Translation\Translator;
 use Illuminate\Validation\Factory;
+use Illuminate\Support\ExtendLoad;
 
 class Validation
 {
     private static function getInstance()
     {
-        static $validator = NULL;
+        static $factory = NULL;
 
-        if ($validator === NULL) {
+        if ($factory === NULL) {
             $testTranslationPath = __DIR__.'/lang';
 
             $testTranslationLocale = 'zn';
@@ -90,11 +122,13 @@ class Validation
 
             $translator = new Translator($translationFileLoader, $testTranslationLocale);
 
-            $validator = new Factory($translator);
+            $factory = new Factory($translator);
+            
+            ExtendLoad::addExtend($factory);
 
         }
 
-        return $validator;
+        return $factory;
 
     }
     
@@ -311,6 +345,116 @@ return [
 ];
 EOT;
         return $lang;
+
+    }
+
+    private static function extendLoad()
+    {
+        $extendLoad= <<<'EOT'
+<?php
+/**
+ * Created by PhpStorm.
+ * User: 杨帆
+ * Date: 2021/2/4
+ * Time: 11:03
+ */
+
+namespace Fy\Illuminate\Support;
+
+use Fy\Illuminate\Validation\Factory;
+
+class ExtendLoad
+{
+    public static function addExtend(Factory $factory)
+    {
+        if (($extendFilesArray = static::dirExistFile(static::getDirExist())) === false) {
+            return false;
+        }
+
+        $registry=static::getRegistry($extendFilesArray);
+
+        foreach ($registry as $item)
+        {
+            $rules = $item['object'];
+            $factory->replacer($item['name'], function ($message, $attribute, $rule, $parameters) use ($rules) {
+                return $rules->message();
+            });
+
+            $factory->extend($item['name'],function ($attribute, $value, $parameters, $validator) use ($rules){
+                return $rules->passes($attribute, $value);
+            });
+        }
+    }
+
+
+    private static function dirExistFile($path)
+    {
+        if (!is_dir($path)) {
+            return false;
+        }
+
+        $files = scandir($path);
+
+        // 删除  "." 和 ".."
+        unset($files[0]);
+        unset($files[1]);
+
+        // 判断是否为空
+        if (!empty($files[2])) {
+            return array_values($files);
+        }
+
+        return false;
+    }
+
+    private static function getDirExist()
+    {
+        return dirname(dirname(dirname(dirname(__DIR__)))).'lumen-validation-extend'.DIRECTORY_SEPARATOR.'src'.DIRECTORY_SEPARATOR.'Rules';
+    }
+
+    /**
+     * 转换字符串的格式到下划线的形式
+     *
+     * CodeType  ->   code_type
+     */
+    private static function transferClassNameToUnderlineType($string)
+    {
+        $lowerString=strtolower($string);
+        $lowerStringArray=explode('', $lowerString);
+        $s=lcfirst($string);
+        $lcfirstArray=explode('', $s);
+        $finalStr='';
+        foreach ($lcfirstArray as $k=>$v){
+            if($v===$lowerStringArray[$k]){
+                $finalStr.=$v;
+            }else{
+                $finalStr.=$lowerStringArray[$k];
+            }
+        }
+        return $finalStr;
+    }
+
+    private static function getRegistry($extendFilesArray)
+    {
+        $registry=[];
+        foreach ($extendFilesArray as $k=>$fileNameAll){
+            if(empty($fileName=pathinfo($fileNameAll,PATHINFO_FILENAME))){
+                throw new \Exception('解析文件名称出错:'.$fileNameAll);
+            }
+
+            require_once static::getDirExist().DIRECTORY_SEPARATOR.$fileNameAll;
+
+            $registry[]=[
+                'name'=>static::transferClassNameToUnderlineType($fileName),
+                'object'=> new $fileNameAll,
+            ];
+
+        }
+        return $registry;
+    }
+}
+EOT;
+        return $extendLoad;
 
     }
 }
