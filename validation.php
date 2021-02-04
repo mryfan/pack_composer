@@ -409,7 +409,7 @@ class ExtendLoad
 
     private static function getDirExist()
     {
-        return dirname(dirname(dirname(dirname(__DIR__)))).'lumen-validation-extend'.DIRECTORY_SEPARATOR.'src'.DIRECTORY_SEPARATOR.'Rules';
+        return dirname(dirname(dirname(dirname(__DIR__)))).DIRECTORY_SEPARATOR.'lumen-validation-extend'.DIRECTORY_SEPARATOR.'src'.DIRECTORY_SEPARATOR.'Rules';
     }
 
     /**
