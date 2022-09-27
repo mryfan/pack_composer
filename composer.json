@@ -1,0 +1,23 @@
+{
+    "name": "fy97/pack_composer",
+    "description": "这是一个打包第三方composer开源包的工具，目的是为了避免composer内冲突",
+    "type": "project",
+    "license": "MIT",
+    "authors": [
+        {
+            "name": "mryfan",
+            "email": "1301747127@qq.com"
+        }
+    ],
+    "minimum-stability": "stable",
+    "autoload": {
+        "psr-4": {
+            "Pack\\": "src/"
+        }
+    },
+    "require": {
+        "ext-json": "*",
+        "dragon-code/pretty-array": "*",
+        "illuminate/collections": "*"
+    }
+}
