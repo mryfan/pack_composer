@@ -1,5 +1,5 @@
 <?php
-use Pack\Controllers\PackIndex;
+use Pack\controllers\PackIndex;
 
 
 require_once __DIR__ . DIRECTORY_SEPARATOR . '/vendor/autoload.php';
