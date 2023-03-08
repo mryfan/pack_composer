@@ -32,23 +32,6 @@ class ReadAllUsefulInfo
         return empty($matches[0][0]) ? '' : $matches[0][0];
     }
 
-    private static function getFunctionNameArray($contents)
-    {
-        $tmp = [];
-        $resArr = token_get_all($contents);
-        foreach ($resArr as $k => &$v) {
-            if (is_numeric($v[0])) {
-                $v['token_name'] = token_name($v[0]);
-                if ($v['token_name'] == 'T_FUNCTION') {
-                    if (!empty($resArr[$k + 2]['1'])) {
-                        $tmp[] = $resArr[$k + 2]['1'];
-                    }
-                }
-            }
-        }
-        return $tmp;
-    }
-
     private static function getFunctionBlock($fileInfo, $contents)
     {
         //如果内容里面存在命名空间，那么就生成一个不带命名空间的临时文件，获取到相关的方法名和函数体之后需要删除
@@ -83,7 +66,9 @@ class ReadAllUsefulInfo
             throw new \Exception($resultArray['msg']);
         }
         if (empty($resultArray['data'])) {
-            throw new \Exception('当前命令返回的函数信息数组为空');
+            echo '当前命令返回的函数信息数组为空,请注意检查';
+            echo '当前文件路径:'.$filePath;
+            echo '当前文件内容:'.$contents;
         }
 
         return $resultArray['data'];

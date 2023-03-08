@@ -36,6 +36,12 @@ class ShengChengNewFiles
         }
         $newFilePath=static::getNewFilePath($fileData);
 
+        //获取函数体里面是否有使用内部类
+        $arr=CheckFuncBlockIsHaveInternalClass::getInternalClassNameArray($fileUsefulInfo);
+        if(!empty($arr)){
+            $fileUsefulInfo['use_block_array']=array_merge($fileUsefulInfo['use_block_array'],$arr);
+        }
+
         $contents='<?php'."\n";
 
         $tmpNamespace=PackYii::$config['namespace'].'\\'.rtrim($fileData['current_namespace'],'\\').';';
