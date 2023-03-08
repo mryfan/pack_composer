@@ -39,8 +39,7 @@ class ReadAllUsefulInfo
             if(is_numeric($v[0])){
                 $v['token_name']=token_name($v[0]);
                 if($v['token_name']=='T_FUNCTION'){
-                    $tmpStr=$resArr[$k+2]['1'];
-                    if(!empty($tmpStr)){
+                    if(!empty($resArr[$k+2]['1'])){
                         $tmp[]=$resArr[$k+2]['1'];
                     }
                 }

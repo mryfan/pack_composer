@@ -114,7 +114,8 @@ class NamespaceAndPathMap
         if(!empty($autoloadArray['files'])){
             foreach ($autoloadArray['files'] as $k=>$fileName){
                 $fullPath=rtrim(rtrim($dirName,'\\'),'/').DIRECTORY_SEPARATOR.rtrim(ltrim($fileName,'\\'),'/');
-                $namespace=static::getNamespaceByPath($fileName,$autoloadArray['psr-4'],$dirName);
+                $psr4Array= $autoloadArray['psr-4']??'';
+                $namespace=static::getNamespaceByPath($fileName,$psr4Array,$dirName);
                 $tmp[$fileName]=[
                     'namespace'=>$namespace,
                     'full_path'=>$fullPath,
