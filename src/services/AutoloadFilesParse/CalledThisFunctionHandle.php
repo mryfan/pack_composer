@@ -58,9 +58,9 @@ class CalledThisFunctionHandle
         $contents=file_get_contents($filePath);
         //替换当前文件中的当前函数的调用方式
 
-        $namespaceAndClassNameStr='\\'.PackYii::$config['namespace'].'\\'.$fileInfo['current_namespace'].ShengChengNewFiles::getNewFileSuffixName($fileInfo['class_name']).'::';
+        $namespaceAndClassNameStr=PackYii::$config['namespace'].'\\'.$fileInfo['current_namespace'].ShengChengNewFiles::getNewFileSuffixName($fileInfo['class_name']).'::';
 
-        $replace_contents=preg_replace('/(?<!function)(\s+)('.$functionName.')(\()/','${1}'.$namespaceAndClassNameStr.'${2}${3}${4}',$contents,-1,$count);
+        $replace_contents=preg_replace('/(?<!function)(\s+)('.$functionName.')(\()/','${1}'.$namespaceAndClassNameStr.'::'.'${2}${3}${4}',$contents,-1,$count);
         if ($count > 0) {
             echo('当前函数  ' . $functionName . '  在当前文件  ' . $filePath . ' 替换了 ' . $count . ' 次'."\n\n");
         }
