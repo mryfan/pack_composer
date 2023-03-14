@@ -40,8 +40,14 @@ class PackIndex
         $filesInfoMap=FilesHandle::handle($psr4AndFilesMap['files']);
 
         //处理psr4的数据
-        $psr4DataArray=Psr4Parse::handle($psr4AndFilesMap['psr-4'],$filesInfoMap);
+        $psr4DataArray=Psr4Parse::handle($psr4AndFilesMap['psr-4']);
 
+        foreach ($filesInfoMap as $item){
+            $psr4DataArray[]=[
+                'newNamespace'=>$item['name_space'],
+                'newPath'=>$item['name_space_path'],
+            ];
+        }
         //生成composer的文件
         ComposerFile::handle($psr4DataArray);
 
