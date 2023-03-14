@@ -8,10 +8,13 @@ use Pack\system\PackYii;
 
 class Psr4Parse
 {
-    public static function handle($psr4Array)
+    public static function handle($psr4Array,$filesInfoMap)
     {
         $psr4DataArray=FilesHandle::moreToOneArray($psr4Array);
 
+//        foreach ($filesInfoMap as $item){
+//            $psr4DataArray[][$item['name_space']]=$item['name_space_path'];
+//        }
         //处理每个命名空间
         static::namespaceHandle($psr4DataArray);
         return $psr4DataArray;
