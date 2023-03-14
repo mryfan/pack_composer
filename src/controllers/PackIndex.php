@@ -37,7 +37,10 @@ class PackIndex
         $psr4AndFilesMap=FilesParse::parsePsr4AndFiles($workDir);
 
         //处理Files的数据
-        $filesDataArray=FilesHandle::handle($psr4AndFilesMap['files']);
+        $filesInfoMap=FilesHandle::handle($psr4AndFilesMap['files']);
+        foreach ($filesInfoMap as $item){
+            $psr4AndFilesMap['psr-4'][$item['name_space']]=$item['name_space_path'];
+        }
 
         //处理psr4的数据
         $psr4DataArray=Psr4Parse::handle($psr4AndFilesMap['psr-4']);

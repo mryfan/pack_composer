@@ -42,6 +42,6 @@ class FilesHandle
         $filesInfoMap=static::generateNewFileByFilesArray($filesDataArray);
         //循环开始，处理调用此函数文件，并替换为新的调用的方式
         CalledThisFunctionHandle::handle($filesInfoMap);
-        return $filesDataArray;
+        return $filesInfoMap;
     }
 }
