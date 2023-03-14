@@ -44,9 +44,9 @@ class ShengChengNewFiles
 
         $contents = '<?php' . "\n";
 
-        $tmpNamespace = PackYii::$config['namespace'] . '\\' . rtrim($fileData['current_namespace'], '\\') . ';';
+        $tmpNamespace = PackYii::$config['namespace'] . '\\' . rtrim($fileData['current_namespace'], '\\') ;
 
-        $contents .= 'namespace ' . $tmpNamespace . "\n\n";
+        $contents .= 'namespace ' . $tmpNamespace. ';' . "\n\n";
 
         foreach ($fileUsefulInfo['use_block_array'] as $k => $v) {
             $contents .= $v . "\n";

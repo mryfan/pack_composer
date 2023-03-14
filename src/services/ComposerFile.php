@@ -22,7 +22,9 @@ class ComposerFile
                     $tmp[$newNamespace][]=$yuanShiTmp;
                     $tmp[$newNamespace][]=$newPath;
                 }else{
-                    $tmp[$newNamespace][]=$newPath;
+                    if(!in_array($newPath,$tmp[$newNamespace])){
+                        $tmp[$newNamespace][]=$newPath;
+                    }
                 }
             }
         }
