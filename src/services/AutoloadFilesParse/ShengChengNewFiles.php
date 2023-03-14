@@ -67,6 +67,6 @@ class ShengChengNewFiles
             throw new Exception('生成新的文件出现错误：当前文件为'.$fileData['full_path']);
         }
 
-        return  $fileUsefulInfo;
+        return  [$fileUsefulInfo,$tmpNamespace];
     }
 }

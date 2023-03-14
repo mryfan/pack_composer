@@ -22,11 +22,13 @@ class FilesHandle
             //读取当前文件有用的信息
             $fileUsefulInfo=ReadAllUsefulInfo::handle($item);
             //拼接要生成的文件内容，并生成副本文件
-            $newFileUsefulInfo=ShengChengNewFiles::handle($fileUsefulInfo,$item);
+            [$newFileUsefulInfo,$namespace]=ShengChengNewFiles::handle($fileUsefulInfo,$item);
             if(!empty($newFileUsefulInfo)){
                 $filesInfoMap[]=[
                     'file_info'=>$item,
-                    'file_useful_info'=>$fileUsefulInfo,
+                    'file_useful_info'=>$newFileUsefulInfo,
+                    'name_space'=>$namespace,
+                    'name_space_path'=>dirname($item['newPath']),
                 ];
             }
         }
