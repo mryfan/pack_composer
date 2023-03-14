@@ -99,7 +99,7 @@ class NamespaceAndPathMap
                     $files[] = [
                         'oldPath' => $v,
                         'newPath' => $diffPathStr . DIRECTORY_SEPARATOR . $class_name . '.' . pathinfo(realpath($tmpFullPath))['extension'],
-                        'current_namespace' => $tmpNameSpace,
+                        'current_namespace' => trim($tmpNameSpace,'\\/'),
                         'full_path' => $tmpFullPath,
                         'class_name' => $class_name,
                     ];
