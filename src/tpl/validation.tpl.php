@@ -1,4 +1,4 @@
-namespace {{namespace}}\Provide\Validation;
+namespace {{namespace}}\Provide\validation;
 
 use {{namespace}}\Illuminate\Filesystem\Filesystem;
 use {{namespace}}\Illuminate\Translation\FileLoader;
